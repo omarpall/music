@@ -9,3 +9,8 @@ plt.plot(np.arange(sig.shape[0])/rate,sig)
 
 # Lesum inn gögnin og setjum mfcc features í fylki
 X = np.load("MFCC.npy")
+flokkar = ["blues","classical","country","disco","hiphop","jazz","metal","pop","reggae","rock"]
+y = np.array(['' for _ in range(1000)], dtype=object)
+for i in range(10):
+    y[100*i:100*(i+1)] = flokkar[i]
+
