@@ -1,4 +1,6 @@
 
 /waves/*
 .DS_store
+*.swp
+MFCC.npy
 
