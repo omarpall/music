@@ -53,9 +53,23 @@ clf = LinearSVC(random_state=0)
 clf.fit(X_train_scaled, y_train)
 y_pred = clf.predict(X_test_scaled)
 print(clf.intercept_)
-dec = clf.decision_function(X)
-print(dec.shape)
-print(dec[600:610])
+dec = clf.decision_function(X_test_scaled)
+mostLikelyClasses = []
+for song in range(dec.shape[0]):
+    sortedSong = dec[song].argsort()[-3:][::-1]
+    mostLikelyClasses.append(sortedSong)
+
+print(mostLikelyClasses[0:5])
+
+y_test_index = np.zeros(150)
+for i in range(150):
+    for j in range(10):
+        if(y_test[i] == flokkar[j]):
+            y_test_index[i] = j
+            break
+print(y_test_index)
+ 
+
         
 # Confusion matrix
 from sklearn.metrics import confusion_matrix
