@@ -1,0 +1,17 @@
+SVC Cross-validation Grid search útkomur:
+(notaði MFCC, deltas og deltadeltas)
+
+- Linear
+The training accuracy is: 0.99875
+The testing accuracy is: 0.47
+The best parameters are: {'C': 0.01}
+
+- Polynomial
+The training accuracy is: 0.99875
+The testing accuracy is: 0.295
+The best parameters are: {'C': 10, 'degree': 2}
+
+- RBF
+The training accuracy is: 0.99875
+The testing accuracy is: 0.105
+The best parameters are: {'C': 10, 'gamma': 0.0001}
