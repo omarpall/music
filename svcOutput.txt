@@ -1,17 +1,25 @@
-SVC Cross-validation Grid search útkomur:
+﻿SVC Cross-validation Grid search útkomur:
 (notaði MFCC, deltas og deltadeltas)
 
 - Linear
 The training accuracy is: 0.99875
-The testing accuracy is: 0.47
+The testing accuracy is: 0.535
 The best parameters are: {'C': 0.01}
+The top 3 accuracy with MFCC and C: 0.01, train/test split 800:200 is (0.455, 0.61, 0.715) 
+Ólíkir flokkar (Classical og Metal) gefa 1.0
+Líkir flokkar (Blues og Rock) gefa 0.633
+
 
 - Polynomial
 The training accuracy is: 0.99875
 The testing accuracy is: 0.295
 The best parameters are: {'C': 10, 'degree': 2}
+Ólíkir flokkar (Classical og Metal) gefa 0.95
+Líkir flokkar (Blues og Rock) gefa 0.675
 
 - RBF
 The training accuracy is: 0.99875
 The testing accuracy is: 0.105
 The best parameters are: {'C': 10, 'gamma': 0.0001}
+Ólíkir flokkar (Classical og Metal) gefa 0.925
+Líkir flokkar (Blues og Rock) gefa 0.715

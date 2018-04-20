@@ -1,21 +1,12 @@
 import numpy as np
-import scipy.io.wavfile as wav
-import matplotlib.pyplot as plt
 from sklearn.svm import SVC
+import matplotlib.pyplot as plt
 from sklearn.model_selection import GridSearchCV
-# Dæmi um lestur fyrsta blues lagsins, og plot
-#(rate,sig) = wav.read("waves/blues.00000.wav")
-#plt.plot(np.arange(sig.shape[0])/rate,sig)
 
-# Read the data (mfcc features, deltas and delta-deltas)
+# Read the data (mfcc features)
 MFCC = np.load("MFCC.npy")
-d_MFCC = np.load("d_MFCC.npy")
-dd_MFCC = np.load("dd_MFCC.npy")
+X = MFCC
 
-# Choose X
-#X = MFCC
-#X = np.concatenate((MFCC, d_MFCC), axis=1)
-X = np.concatenate((MFCC, d_MFCC, dd_MFCC), axis=1)
 
 # Put the right labels in a vector y
 flokkar = ["blues","classical","country","disco","hiphop","jazz","metal","pop","reggae","rock"]
@@ -40,7 +31,9 @@ X_test_scaled = scaler.transform(X_test)
 
 # ------- Support Vector Machine -------
 # - Linear kernel
-
+# =============================================================================
+# Tuning
+# =============================================================================
         
 # SVC Cross-validation Grid Search - linear
 parameters = {'C':[0.01,0.1,1,10,100]}
@@ -75,4 +68,40 @@ print("The training accuracy is:",accTrain)
 print("The testing accuracy is:",accTest)
 print("The best parameters are:",clfRbf.best_params_)
 
+
+# =============================================================================
+# Hot models
+# =============================================================================
+from sklearn.metrics import confusion_matrix
+clf = SVC(C=10, degree=2, kernel="poly")
+clf.fit(X_train_scaled, y_train)
+y_pred = clf.predict(X_test_scaled)
+cm1 = confusion_matrix(y_test,y_pred, labels=flokkar) 
+print(cm1)
+flokkaAcc = cm1/np.sum(cm1, axis = 1, keepdims = True)
+print("Nákvæmni fyrir hvern flokk:")
+print(np.round(np.diagonal(flokkaAcc*100),1))
+plt.matshow(flokkaAcc, cmap="afmhot")
+plt.xticks(range(len(flokkar)), flokkar, rotation=80)
+plt.yticks(range(len(flokkar)), flokkar)
+plt.colorbar()
+plt.savefig("cmPolySVC.png")
+acc = np.sum(y_pred==y_test)/len(y_pred)
+print("The accuracy is:",acc)
+
+clf = SVC(C=10, gamma=0.0001, kernel="rbf")
+clf.fit(X_train_scaled, y_train)
+y_pred = clf.predict(X_test_scaled)
+cm1 = confusion_matrix(y_test,y_pred, labels=flokkar) 
+print(cm1)
+flokkaAcc = cm1/np.sum(cm1, axis = 1, keepdims = True)
+print("Nákvæmni fyrir hvern flokk:")
+print(np.round(np.diagonal(flokkaAcc*100),1))
+plt.matshow(flokkaAcc, cmap="afmhot")
+plt.xticks(range(len(flokkar)), flokkar, rotation=80)
+plt.yticks(range(len(flokkar)), flokkar)
+plt.colorbar()
+plt.savefig("cmRBFSVC.png")
+acc = np.sum(y_pred==y_test)/len(y_pred)
+print("The accuracy is:",acc)
 

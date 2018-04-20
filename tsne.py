@@ -1,74 +1,59 @@
 # -*- coding: utf-8 -*-
 """
 Created on Tue Apr 17 13:58:02 2018
-
 @author: notandi
 """
 
 import numpy as np
-import scipy.io.wavfile as wav
 import matplotlib.pyplot as plt
-from sklearn.svm import SVC
 from sklearn.manifold import TSNE
-from sklearn.model_selection import GridSearchCV
-# Dæmi um lestur fyrsta blues lagsins, og plot
-#(rate,sig) = wav.read("waves/blues.00000.wav")
-#plt.plot(np.arange(sig.shape[0])/rate,sig)
 
-# Read the data (mfcc features, deltas and delta-deltas)
+
+# =============================================================================
+# Lesum inn gögnin, X inniheldur lög frá öllum flokkunum, X2 inniheldur aðeins
+# lög frá metal og country(ólíkum flokkum) og X3 inniheldur lög frá blues og
+# og rock(líkum flokkum).
+# =============================================================================
 MFCC = np.load("MFCC.npy")
-d_MFCC = np.load("d_MFCC.npy")
-dd_MFCC = np.load("dd_MFCC.npy")
-
-# Choose X
-#X = MFCC
-X = np.concatenate((MFCC, d_MFCC, dd_MFCC), axis=1)
-
-# Put the right labels in a vector y
-flokkar = ["blues","classical","country","disco","hiphop","jazz","metal","pop","reggae","rock"]
-flokkarOlikir = np.array(['' for _ in range(200)], dtype=object)
-flokkarOlikir[0:100] = "metal"
-flokkarOlikir[100:200] = "country"
+X = MFCC
 X2 = np.concatenate((MFCC[600:700], MFCC[200:300]), axis=0)
+X3 = np.concatenate((MFCC[0:100], MFCC[900:1000]), axis=0)
 
 
-y = np.array(['' for _ in range(1000)], dtype=object)
-for i in range(10):
-    y[100*i:100*(i+1)] = flokkar[i]
 
-
-# Split into training, testing and validation set
-from sklearn.model_selection import train_test_split
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=150, random_state=42)
-#X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, test_size=150, random_state=42)
-X2_train, X2_test, y2_train, y2_test = train_test_split(X, y, test_size=30, random_state=42)
-#X2_train, X2_val, y2_train, y2_val = train_test_split(X_train, y_train, test_size=30, random_state=42)
-
-
-# Scale the data
-from sklearn.preprocessing import StandardScaler 
-scaler = StandardScaler()
-scaler.fit(X_train)
-X_train_scaled = scaler.transform(X_train)
-X_test_scaled = scaler.transform(X_test)
-X_val_scaled = scaler.transform(X_val)
-scaler.fit(X2_train)
-X2_train_scaled = scaler.transform(X2_train)
-X2_test_scaled = scaler.transform(X2_test)
-X2_val_scaled = scaler.transform(X2_val)
-
-X2_embedded = TSNE(n_components=2).fit_transform(X2)
+# =============================================================================
+# Prófum t-SNE klösun á gögnunum og plottum niðurstöðurnar
+# =============================================================================
 X_embedded = TSNE(n_components=2).fit_transform(X)
+X2_embedded = TSNE(n_components=2).fit_transform(X2)
+X3_embedded = TSNE(n_components=2).fit_transform(X3)
+
 ylab = np.zeros(1000)
 for i in range(10):
     ylab[i*100:(i+1)*100] = i
-plt.scatter(X_embedded[:,0], X_embedded[:,1], c=ylab)
+plt.scatter(X_embedded[:,0], X_embedded[:,1], c=ylab, cmap="tab10")
+plt.colorbar()
+plt.xlim((-30,30))
+plt.ylim((-20,20))
+plt.title("Allir flokkar")
+plt.savefig("tsne10.png")
 
-
-# Saving the pic
+y2lab = np.zeros(200)
+for i in range(2):
+    y2lab[i*100:(i+1)*100] = i
 fig = plt.figure()
-plt.scatter(X_embedded[:,0], X_embedded[:,1], c=ylab)
-plt.title("TSNE dimension reduction")
-plt.savefig("tsne.png")
+plt.scatter(X2_embedded[:,0], X2_embedded[:,1], c=y2lab)
+plt.xlim((-50,50))
+plt.ylim((-50,50))
+plt.title("Tveir ólíkir flokkar")
+plt.savefig("tsne2Olikir.png")
+
+y3lab = np.zeros(200)
+for i in range(2):
+    y3lab[i*100:(i+1)*100] = i
+fig = plt.figure()
+plt.scatter(X3_embedded[:,0], X3_embedded[:,1], c=y3lab)
+plt.title("Tveir líkir flokkar")
+plt.savefig("tsne2Likir.png")
 
 
